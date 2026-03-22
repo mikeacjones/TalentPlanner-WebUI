@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TBC Classic Talent Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="planner">
+    <div class="flavor-toggle" id="flavor-toggle"></div>
+    <div class="class-picker" id="class-picker"></div>
+
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <span class="top-bar-label">Points Remaining:</span>
+        <span class="points-badge" id="points-left">61</span>
+      </div>
+      <div class="top-bar-center">
+        <span class="top-bar-label">Required Level:</span>
+        <span class="level-badge" id="req-level">9</span>
+      </div>
+      <div class="top-bar-right">
+        <button id="btn-reset" class="btn btn-reset">Reset</button>
+        <button id="btn-link" class="btn btn-reset">Copy Link</button>
+        <button id="btn-export" class="btn btn-primary">Export JSON</button>
+      </div>
+    </div>
+
+    <div class="trees-container" id="trees-container">
+      <!-- Trees rendered by JS -->
+    </div>
+
+    <div class="order-panel">
+      <h2>Talent Order</h2>
+      <div class="order-grid" id="order-list"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="export-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Exported Talent Sequence</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <textarea id="export-output" readonly rows="20"></textarea>
+      <button class="btn btn-primary" id="btn-copy">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <script src="planner.js"></script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #1e2127;
+  color: #bec3ca;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+.planner {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Flavor Toggle */
+.flavor-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.flavor-btn {
+  padding: 6px 20px;
+  background: #272b33;
+  color: #8b919a;
+  border: 1px solid #323741;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.flavor-btn:hover {
+  color: #bec3ca;
+  border-color: #459aff;
+}
+
+.flavor-btn.active {
+  background: #459aff;
+  color: #fff;
+  border-color: #459aff;
+}
+
+/* Class Picker */
+.class-picker {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+  margin-bottom: 12px;
+}
+
+.class-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid #323741;
+  cursor: pointer;
+  padding: 0;
+  background: #272b33;
+  transition: border-color 0.15s, transform 0.1s;
+  overflow: hidden;
+}
+
+.class-btn img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 6px;
+}
+
+.class-btn:hover {
+  border-color: #459aff;
+  transform: scale(1.08);
+}
+
+.class-btn.active {
+  border-color: #459aff;
+  box-shadow: 0 0 8px rgba(69, 154, 255, 0.4);
+}
+
+/* WoW class colors for active state */
+.class-btn.active.c-warrior  { border-color: #C69B6D; box-shadow: 0 0 8px rgba(198,155,109,0.4); }
+.class-btn.active.c-paladin  { border-color: #F48CBA; box-shadow: 0 0 8px rgba(244,140,186,0.4); }
+.class-btn.active.c-hunter   { border-color: #AAD372; box-shadow: 0 0 8px rgba(170,211,114,0.4); }
+.class-btn.active.c-rogue    { border-color: #FFF468; box-shadow: 0 0 8px rgba(255,244,104,0.4); }
+.class-btn.active.c-priest   { border-color: #FFFFFF; box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+.class-btn.active.c-shaman   { border-color: #0070DD; box-shadow: 0 0 8px rgba(0,112,221,0.4); }
+.class-btn.active.c-mage     { border-color: #3FC7EB; box-shadow: 0 0 8px rgba(63,199,235,0.4); }
+.class-btn.active.c-warlock  { border-color: #8788EE; box-shadow: 0 0 8px rgba(135,136,238,0.4); }
+.class-btn.active.c-druid    { border-color: #FF7C0A; box-shadow: 0 0 8px rgba(255,124,10,0.4); }
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: #272b33;
+  border: 1px solid #323741;
+  border-radius: 8px;
+}
+
+.top-bar-left,
+.top-bar-center,
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-bar-label {
+  color: #8b919a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.points-badge {
+  background: #459aff;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.level-badge {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn {
+  padding: 6px 16px;
+  border: 1px solid #323741;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-reset {
+  background: #323741;
+  color: #bec3ca;
+}
+
+.btn-reset:hover {
+  background: #3c424d;
+  border-color: #459aff;
+}
+
+.btn-primary {
+  background: #459aff;
+  color: #fff;
+  border-color: #459aff;
+}
+
+.btn-primary:hover {
+  background: #3a87e0;
+}
+
+/* Talent Trees */
+.trees-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tree {
+  flex: 1;
+  background: #272b33;
+  border: 1px solid #323741;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.tree-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #323741;
+}
+
+.tree-header-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 2px solid #323741;
+}
+
+.tree-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.tree-header .tree-points {
+  margin-left: auto;
+  background: #323741;
+  color: #8b919a;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 10px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.tree-header .tree-points.has-points {
+  background: #459aff;
+  color: #fff;
+}
+
+.tree-body {
+  position: relative;
+  background-size: cover;
+  background-position: center top;
+  padding: 12px 8px;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+/* Dark overlay on tree background */
+.tree-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 33, 39, 0.55);
+  pointer-events: none;
+}
+
+/* Talent Grid */
+.talent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.talent-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Individual Talent */
+.talent {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.talent-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  border: 2px solid #4a4f59;
+  display: block;
+  transition: border-color 0.15s, filter 0.15s;
+}
+
+.talent.available .talent-icon {
+  border-color: #5c9e5c;
+}
+
+.talent.has-points .talent-icon {
+  border-color: #5c9e5c;
+  box-shadow: 0 0 4px rgba(92, 158, 92, 0.3);
+}
+
+.talent.maxed .talent-icon {
+  border-color: #d4a017;
+  box-shadow: 0 0 6px rgba(212, 160, 23, 0.35);
+}
+
+.talent.locked .talent-icon {
+  filter: grayscale(1) brightness(0.35);
+  border-color: #363a42;
+}
+
+.talent.locked {
+  cursor: default;
+}
+
+/* Rank badge - always visible */
+.talent-rank {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 3px;
+  border-radius: 3px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.75);
+  color: #555;
+}
+
+.talent.available .talent-rank {
+  color: #555;
+}
+
+.talent.has-points .talent-rank {
+  color: #5f5;
+}
+
+.talent.maxed .talent-rank {
+  color: #fc0;
+}
+
+/* Global tooltip */
+.talent-tooltip {
+  display: none;
+  position: fixed;
+  background: #1a1d23;
+  border: 1px solid #459aff;
+  border-radius: 6px;
+  padding: 10px 14px;
+  max-width: 320px;
+  font-size: 13px;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.talent-tooltip .tooltip-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.talent-tooltip .tooltip-rank {
+  color: #8b919a;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.talent-tooltip .tooltip-desc {
+  color: #ffd100;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.talent-tooltip .tooltip-next-label {
+  color: #6b7280;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.talent-tooltip .tooltip-next {
+  color: #8b919a;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.talent-tooltip .tooltip-req {
+  color: #ef4444;
+  font-size: 12px;
+}
+
+/* Prerequisite Arrows */
+.arrow-line {
+  position: absolute;
+  background: #4a4f59;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.arrow-line.active {
+  background: #5c9e5c;
+}
+
+.arrow-line.maxed {
+  background: #d4a017;
+}
+
+.arrow-line-v {
+  width: 3px;
+}
+
+.arrow-line-h {
+  height: 3px;
+}
+
+/* Talent Order Panel */
+.order-panel {
+  background: #272b33;
+  border: 1px solid #323741;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.order-panel h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 6px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1e2127;
+  border: 1px solid #323741;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.order-item-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid #4a4f59;
+}
+
+.order-item-level {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Export Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: #272b33;
+  border: 1px solid #323741;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #8b919a;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: #fff;
+}
+
+.modal textarea {
+  width: 100%;
+  background: #1e2127;
+  color: #bec3ca;
+  border: 1px solid #323741;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: 'Consolas', 'SF Mono', 'Courier New', monospace;
+  font-size: 12px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.modal textarea:focus {
+  outline: none;
+  border-color: #459aff;
+}
