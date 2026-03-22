@@ -92,8 +92,8 @@
     // Apply URL-encoded build if present and matching current flavor/class
     if (pendingHash) {
       const decoded = decodeURL(pendingHash);
-      if (decoded && decoded.flavor.slug === currentFlavor.slug && decoded.cls.slug === currentClass.slug) {
-        applyEncodedOrder(decoded.encoded);
+      if (decoded) {
+        applySpellIdOrder(decoded.talents);
       }
       pendingHash = null;
     }
@@ -511,79 +511,79 @@
     updateAllStates();
   });
 
-  // Compute 1-based talent index within a tree tab (sorted by row, col)
-  function getTalentTabIndex(treeIndex, talentId) {
-    const sorted = state.trees[treeIndex].talents
-      .slice()
-      .sort((a, b) => a.row - b.row || a.col - b.col);
-    return sorted.findIndex(t => t.id === talentId) + 1;
+  // Build a reverse lookup: spellId -> { treeIndex, talentId }
+  function buildSpellIdLookup() {
+    const lookup = {};
+    state.trees.forEach((tree, treeIndex) => {
+      tree.talents.forEach(talent => {
+        if (talent.ranks) {
+          talent.ranks.forEach(spellId => {
+            lookup[spellId] = { treeIndex, talentId: talent.id };
+          });
+        }
+      });
+    });
+    return lookup;
   }
 
-  // URL encoding: each talent across all trees gets a global index,
-  // encoded as a single character. Digits 0/1/2 switch active tree.
-  const URL_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ3456789';
+  const CLASS_TOKENS = {
+    druid: 'DRUID', hunter: 'HUNTER', mage: 'MAGE', paladin: 'PALADIN',
+    priest: 'PRIEST', rogue: 'ROGUE', shaman: 'SHAMAN', warlock: 'WARLOCK',
+    warrior: 'WARRIOR',
+  };
 
-  function getTalentSortedPosition(treeIndex, talentId) {
-    const sorted = state.trees[treeIndex].talents
-      .slice()
-      .sort((a, b) => a.row - b.row || a.col - b.col);
-    return sorted.findIndex(t => t.id === talentId);
+  const CLASS_TOKEN_TO_SLUG = Object.fromEntries(
+    Object.entries(CLASS_TOKENS).map(([slug, token]) => [token, slug])
+  );
+
+  function buildExportJSON() {
+    return {
+      classToken: CLASS_TOKENS[currentClass.slug] || currentClass.slug.toUpperCase(),
+      flavor: currentFlavor.slug,
+      talents: state.order.map(entry => {
+        const talent = findTalent(entry.treeIndex, entry.talentId);
+        return talent.ranks[entry.rank - 1];
+      }),
+    };
   }
 
   function encodeURL() {
     if (state.order.length === 0) return '';
-    let encoded = '';
-    let lastTree = -1;
-    for (const entry of state.order) {
-      if (entry.treeIndex !== lastTree) {
-        encoded += entry.treeIndex;
-        lastTree = entry.treeIndex;
-      }
-      const pos = getTalentSortedPosition(entry.treeIndex, entry.talentId);
-      encoded += URL_CHARS[pos] || '?';
-    }
-    return `#${currentFlavor.slug}/${currentClass.slug}/${encoded}`;
+    const json = JSON.stringify(buildExportJSON());
+    const base64 = btoa(json);
+    return `#b/${base64}`;
   }
 
   function decodeURL(hash) {
     if (!hash || hash.length < 2) return null;
-    const parts = hash.substring(1).split('/');
-    if (parts.length < 3) return null;
+    const raw = hash.substring(1);
 
-    const [flavorSlug, classSlug, encoded] = parts;
-    const flavor = FLAVORS.find(f => f.slug === flavorSlug);
-    const cls = CLASS_LIST.find(c => c.slug === classSlug);
-    if (!flavor || !cls || !encoded) return null;
-
-    return { flavor, cls, encoded };
+    if (!raw.startsWith('b/')) return null;
+    try {
+      const json = atob(raw.substring(2));
+      const data = JSON.parse(json);
+      if (!data.classToken || !Array.isArray(data.talents)) return null;
+      return data;
+    } catch {
+      return null;
+    }
   }
 
-  function applyEncodedOrder(encoded) {
-    const trees = state.trees;
-    let currentTree = 0;
-    for (let i = 0; i < encoded.length; i++) {
-      const ch = encoded[i];
-      if (ch === '0' || ch === '1' || ch === '2') {
-        currentTree = parseInt(ch);
-        continue;
-      }
-      const pos = URL_CHARS.indexOf(ch);
-      if (pos < 0) continue;
-      const sorted = trees[currentTree].talents
-        .slice()
-        .sort((a, b) => a.row - b.row || a.col - b.col);
-      if (pos >= sorted.length) continue;
-      const talent = sorted[pos];
-      const stateTalent = findTalent(currentTree, talent.id);
-      if (stateTalent && canAllocate(currentTree, stateTalent)) {
-        stateTalent.currentRank++;
+  function applySpellIdOrder(spellIds) {
+    const lookup = buildSpellIdLookup();
+    for (const spellId of spellIds) {
+      const loc = lookup[spellId];
+      if (!loc) continue;
+      const talent = findTalent(loc.treeIndex, loc.talentId);
+      if (talent && canAllocate(loc.treeIndex, talent)) {
+        talent.currentRank++;
         state.order.push({
-          treeIndex: currentTree,
-          talentId: stateTalent.id,
-          rank: stateTalent.currentRank,
-          maxRank: stateTalent.maxRank,
-          name: stateTalent.name,
-          icon: stateTalent.icon,
+          treeIndex: loc.treeIndex,
+          talentId: talent.id,
+          rank: talent.currentRank,
+          maxRank: talent.maxRank,
+          name: talent.name,
+          icon: talent.icon,
         });
       }
     }
@@ -601,26 +601,7 @@
 
   // Export
   document.getElementById('btn-export').addEventListener('click', () => {
-    const CLASS_TOKENS = {
-      druid: 'DRUID', hunter: 'HUNTER', mage: 'MAGE', paladin: 'PALADIN',
-      priest: 'PRIEST', rogue: 'ROGUE', shaman: 'SHAMAN', warlock: 'WARLOCK',
-      warrior: 'WARRIOR',
-    };
-
-    const sequence = {
-      classToken: CLASS_TOKENS[currentClass.slug] || currentClass.slug.toUpperCase(),
-      talents: state.order.map((entry, i) => {
-        const talent = findTalent(entry.treeIndex, entry.talentId);
-        return {
-          tab: entry.treeIndex + 1,
-          index: getTalentTabIndex(entry.treeIndex, entry.talentId),
-          rank: entry.rank,
-          level: classData.startingLevel + i + 1,
-          spellId: talent.ranks[entry.rank - 1],
-        };
-      }),
-    };
-
+    const sequence = buildExportJSON();
     exportOutput.value = JSON.stringify(sequence, null, 2);
     exportModal.hidden = false;
   });
@@ -650,8 +631,16 @@
   if (window.location.hash && window.location.hash.length > 1) {
     const decoded = decodeURL(window.location.hash);
     if (decoded) {
-      currentFlavor = decoded.flavor;
-      currentClass = decoded.cls;
+      const classSlug = CLASS_TOKEN_TO_SLUG[decoded.classToken];
+      const flavorSlug = decoded.flavor;
+      if (classSlug) {
+        const cls = CLASS_LIST.find(c => c.slug === classSlug);
+        if (cls) currentClass = cls;
+      }
+      if (flavorSlug) {
+        const flavor = FLAVORS.find(f => f.slug === flavorSlug);
+        if (flavor) currentFlavor = flavor;
+      }
       pendingHash = window.location.hash;
     }
   }
