@@ -241,7 +241,7 @@ body {
   position: relative;
   background-size: cover;
   background-position: center top;
-  padding: 12px 8px;
+  padding: 10px 8px 8px;
   border-radius: 0 0 8px 8px;
   overflow: hidden;
 }
@@ -259,7 +259,7 @@ body {
 .talent-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px 4px;
+  gap: 2px 4px;
   position: relative;
   z-index: 1;
 }
