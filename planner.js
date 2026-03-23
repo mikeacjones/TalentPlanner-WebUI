@@ -306,9 +306,25 @@
 
   function drawArrows(treeIndex, treeEl) {
     treeEl.querySelectorAll('.arrow-line').forEach(a => a.remove());
+    treeEl.querySelectorAll('.arrow-head').forEach(a => a.remove());
 
     const tree = state.trees[treeIndex];
     const grid = treeEl.querySelector('.talent-grid');
+
+    function appendLine(className, styles) {
+      const line = document.createElement('div');
+      line.className = className;
+      Object.assign(line.style, styles);
+      grid.appendChild(line);
+    }
+
+    function appendArrowHead(x, y, arrowClass) {
+      const head = document.createElement('div');
+      head.className = `arrow-head ${arrowClass}`.trim();
+      head.style.left = `${x}px`;
+      head.style.top = `${y}px`;
+      grid.appendChild(head);
+    }
 
     tree.talents.forEach(talent => {
       if (!talent.requires || talent.requires.length === 0) return;
@@ -334,37 +350,35 @@
         }
 
         if (source.col === talent.col) {
-          const line = document.createElement('div');
-          line.className = `arrow-line arrow-line-v ${arrowClass}`;
-          line.style.left = `${sx - 1}px`;
-          line.style.top = `${sy}px`;
-          line.style.height = `${ty - sy}px`;
-          grid.appendChild(line);
+          appendLine(`arrow-line arrow-line-v ${arrowClass}`.trim(), {
+            left: `${sx - 2}px`,
+            top: `${sy}px`,
+            height: `${ty - sy}px`,
+          });
+          appendArrowHead(sx, ty - 7, arrowClass);
         } else {
-          const midY = ty - 6;
+          const midY = ty - 10;
 
-          const vLine = document.createElement('div');
-          vLine.className = `arrow-line arrow-line-v ${arrowClass}`;
-          vLine.style.left = `${sx - 1}px`;
-          vLine.style.top = `${sy}px`;
-          vLine.style.height = `${midY - sy}px`;
-          grid.appendChild(vLine);
+          appendLine(`arrow-line arrow-line-v ${arrowClass}`.trim(), {
+            left: `${sx - 2}px`,
+            top: `${sy}px`,
+            height: `${midY - sy}px`,
+          });
 
-          const hLine = document.createElement('div');
-          hLine.className = `arrow-line arrow-line-h ${arrowClass}`;
           const leftX = Math.min(sx, tx);
           const rightX = Math.max(sx, tx);
-          hLine.style.left = `${leftX}px`;
-          hLine.style.top = `${midY}px`;
-          hLine.style.width = `${rightX - leftX}px`;
-          grid.appendChild(hLine);
+          appendLine(`arrow-line arrow-line-h ${arrowClass}`.trim(), {
+            left: `${leftX}px`,
+            top: `${midY - 2}px`,
+            width: `${rightX - leftX}px`,
+          });
 
-          const vLine2 = document.createElement('div');
-          vLine2.className = `arrow-line arrow-line-v ${arrowClass}`;
-          vLine2.style.left = `${tx - 1}px`;
-          vLine2.style.top = `${midY}px`;
-          vLine2.style.height = `${ty - midY}px`;
-          grid.appendChild(vLine2);
+          appendLine(`arrow-line arrow-line-v ${arrowClass}`.trim(), {
+            left: `${tx - 2}px`,
+            top: `${midY}px`,
+            height: `${ty - midY}px`,
+          });
+          appendArrowHead(tx, ty - 7, arrowClass);
         }
       });
     });
