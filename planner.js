@@ -33,6 +33,8 @@
   // DOM refs
   const flavorToggle = document.getElementById('flavor-toggle');
   const classPicker = document.getElementById('class-picker');
+  const plannerShell = document.getElementById('planner-shell');
+  const plannerEl = document.getElementById('planner');
   const treesContainer = document.getElementById('trees-container');
   const orderList = document.getElementById('order-list');
   const pointsLeftEl = document.getElementById('points-left');
@@ -198,6 +200,32 @@
     return parts.join('\n');
   }
 
+  function updatePlannerScale() {
+    plannerShell.style.setProperty('--planner-scale', '1');
+    plannerShell.style.width = '';
+    plannerShell.style.height = '';
+
+    const plannerWidth = plannerEl.offsetWidth;
+    const plannerHeight = plannerEl.offsetHeight;
+    if (!plannerWidth || !plannerHeight) return;
+
+    const shellStyle = getComputedStyle(plannerShell);
+    const shellPadX = parseFloat(shellStyle.paddingLeft) + parseFloat(shellStyle.paddingRight);
+    const shellPadY = parseFloat(shellStyle.paddingTop) + parseFloat(shellStyle.paddingBottom);
+    const availableWidth = window.innerWidth - shellPadX;
+    const availableHeight = window.innerHeight - shellPadY;
+
+    const scale = Math.min(
+      1,
+      availableWidth / plannerWidth,
+      availableHeight / plannerHeight
+    );
+
+    plannerShell.style.setProperty('--planner-scale', String(scale));
+    plannerShell.style.width = `${plannerWidth * scale + shellPadX}px`;
+    plannerShell.style.height = `${plannerHeight * scale + shellPadY}px`;
+  }
+
   // Rendering
   function renderTrees() {
     treesContainer.innerHTML = '';
@@ -359,6 +387,7 @@
 
     renderOrder();
     updateURL();
+    updatePlannerScale();
 
     // Refresh tooltip if visible
     if (tooltip.style.display === 'block') {
@@ -613,6 +642,8 @@
   exportModal.addEventListener('click', (e) => {
     if (e.target === exportModal) exportModal.hidden = true;
   });
+
+  window.addEventListener('resize', updatePlannerScale);
 
   document.getElementById('btn-copy').addEventListener('click', () => {
     exportOutput.select();

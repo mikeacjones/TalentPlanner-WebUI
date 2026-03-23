@@ -10,12 +10,21 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.planner-shell {
+  --planner-scale: 1;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 16px;
 }
 
 .planner {
-  max-width: 1020px;
-  margin: 0 auto;
-  padding: 16px;
+  width: 1020px;
+  max-width: calc(100vw - 32px);
+  transform-origin: top center;
+  transform: scale(var(--planner-scale));
 }
 
 /* Flavor Toggle */
