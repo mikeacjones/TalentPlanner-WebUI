@@ -297,14 +297,10 @@
         const targetEl = grid.querySelector(`[data-talent-id="${talent.id}"]`);
         if (!sourceEl || !targetEl) return;
 
-        const gridRect = grid.getBoundingClientRect();
-        const sourceRect = sourceEl.getBoundingClientRect();
-        const targetRect = targetEl.getBoundingClientRect();
-
-        const sx = sourceRect.left + sourceRect.width / 2 - gridRect.left;
-        const sy = sourceRect.top + sourceRect.height - gridRect.top;
-        const tx = targetRect.left + targetRect.width / 2 - gridRect.left;
-        const ty = targetRect.top - gridRect.top;
+        const sx = sourceEl.offsetLeft + sourceEl.offsetWidth / 2;
+        const sy = sourceEl.offsetTop + sourceEl.offsetHeight;
+        const tx = targetEl.offsetLeft + targetEl.offsetWidth / 2;
+        const ty = targetEl.offsetTop;
 
         let arrowClass = '';
         if (source.currentRank >= req.qty && talent.currentRank >= talent.maxRank) {
