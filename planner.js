@@ -202,7 +202,6 @@
 
   function updatePlannerScale() {
     plannerShell.style.setProperty('--planner-scale', '1');
-    plannerShell.style.width = '';
     plannerShell.style.height = '';
 
     const plannerWidth = plannerEl.offsetWidth;
@@ -222,7 +221,6 @@
     );
 
     plannerShell.style.setProperty('--planner-scale', String(scale));
-    plannerShell.style.width = `${plannerWidth * scale + shellPadX}px`;
     plannerShell.style.height = `${plannerHeight * scale + shellPadY}px`;
   }
 

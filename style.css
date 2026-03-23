@@ -15,7 +15,9 @@ body {
 
 .planner-shell {
   --planner-scale: 1;
-  width: fit-content;
+  width: 100%;
+  display: flex;
+  justify-content: center;
   margin: 0 auto;
   padding: 16px;
 }
