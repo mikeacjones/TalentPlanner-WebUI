@@ -355,6 +355,8 @@
   }
 
   function drawArrows(treeIndex, treeEl) {
+    const ARROW_HEAD_DEPTH = 12;
+
     treeEl.querySelectorAll('.arrow-line').forEach(a => a.remove());
     treeEl.querySelectorAll('.arrow-head').forEach(a => a.remove());
 
@@ -416,14 +418,19 @@
             top: `${sourceCenterY - 2}px`,
             width: `${width}px`,
           });
-          appendArrowHead(direction === 'right' ? targetLeft : targetRight, sourceCenterY, arrowClass, direction);
+          appendArrowHead(
+            direction === 'right' ? targetLeft - ARROW_HEAD_DEPTH : targetRight + ARROW_HEAD_DEPTH,
+            sourceCenterY,
+            arrowClass,
+            direction
+          );
         } else if (source.col === talent.col) {
           appendLine(`arrow-line arrow-line-v ${arrowClass}`.trim(), {
             left: `${sx - 2}px`,
             top: `${sy}px`,
             height: `${ty - sy}px`,
           });
-          appendArrowHead(sx, ty - 7, arrowClass, 'down');
+          appendArrowHead(sx, ty - ARROW_HEAD_DEPTH, arrowClass, 'down');
         } else {
           const midY = ty - 10;
 
@@ -446,7 +453,7 @@
             top: `${midY}px`,
             height: `${ty - midY}px`,
           });
-          appendArrowHead(tx, ty - 7, arrowClass, 'down');
+          appendArrowHead(tx, ty - ARROW_HEAD_DEPTH, arrowClass, 'down');
         }
       });
     });
