@@ -433,6 +433,7 @@ body {
 .order-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  grid-auto-rows: 36px;
   gap: 6px;
 }
 
@@ -444,6 +445,7 @@ body {
   border: 1px solid #323741;
   border-radius: 6px;
   padding: 4px 6px;
+  min-height: 36px;
 }
 
 .order-item-icon {

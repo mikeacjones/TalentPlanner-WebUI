@@ -1,6 +1,9 @@
 (async function() {
   const POINTS_PER_TIER = 5;
   const ICON_BASE = 'images/icons/';
+  const ORDER_GRID_MIN_COL_WIDTH = 60;
+  const ORDER_GRID_GAP = 6;
+  const ORDER_GRID_ROW_HEIGHT = 36;
 
   const FLAVORS = [
     { name: 'Classic', slug: 'classic' },
@@ -200,9 +203,30 @@
     return parts.join('\n');
   }
 
+  function reserveOrderGridHeight() {
+    if (!classData) return;
+
+    orderList.style.minHeight = '';
+
+    const availableWidth = orderList.clientWidth;
+    if (!availableWidth) return;
+
+    const columns = Math.max(
+      1,
+      Math.floor((availableWidth + ORDER_GRID_GAP) / (ORDER_GRID_MIN_COL_WIDTH + ORDER_GRID_GAP))
+    );
+    const rows = Math.max(1, Math.ceil(maxPoints / columns));
+    const reservedHeight =
+      rows * ORDER_GRID_ROW_HEIGHT + (rows - 1) * ORDER_GRID_GAP;
+
+    orderList.style.minHeight = `${reservedHeight}px`;
+  }
+
   function updatePlannerScale() {
     plannerShell.style.setProperty('--planner-scale', '1');
     plannerShell.style.height = '';
+
+    reserveOrderGridHeight();
 
     const plannerWidth = plannerEl.offsetWidth;
     const plannerHeight = plannerEl.offsetHeight;
