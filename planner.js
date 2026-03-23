@@ -548,7 +548,7 @@
 
     // Refresh tooltip if visible
     if (tooltip.style.display === 'block') {
-      const hovered = document.querySelector('.talent:hover');
+      const hovered = document.querySelector('.talent:hover, .order-item:hover');
       if (hovered) showTooltip(hovered);
     }
   }
@@ -562,6 +562,7 @@
       item.className = 'order-item';
       item.dataset.tree = String(entry.treeIndex);
       item.dataset.talentId = String(entry.talentId);
+      item.dataset.rank = String(entry.rank);
       item.innerHTML = `
         <img class="order-item-icon" src="${ICON_BASE}${entry.icon}.jpg" alt="${entry.name}">
         <span class="order-item-level">${level}</span>
@@ -631,11 +632,15 @@
     const talent = findTalent(treeIndex, talentId);
     if (!talent) return;
 
+    const rankOverride = parseInt(targetEl.dataset.rank);
+    const displayRank = Math.max(
+      Number.isNaN(rankOverride) ? talent.currentRank : rankOverride,
+      1
+    );
+
     tooltip.querySelector('.tooltip-name').textContent = talent.name;
     tooltip.querySelector('.tooltip-rank').textContent =
-      `Rank ${talent.currentRank}/${talent.maxRank}`;
-
-    const displayRank = Math.max(talent.currentRank, 1);
+      `Rank ${displayRank}/${talent.maxRank}`;
     const descEl = tooltip.querySelector('.tooltip-desc');
     const nextLabelEl = tooltip.querySelector('.tooltip-next-label');
     const nextEl = tooltip.querySelector('.tooltip-next');
