@@ -435,22 +435,60 @@ body {
   position: absolute;
   width: 0;
   height: 0;
-  margin-left: -8px;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 12px solid #4d535c;
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.12)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
   pointer-events: none;
   z-index: 0;
 }
 
-.arrow-head.active {
+.arrow-head-down {
+  margin-left: -8px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #4d535c;
+}
+
+.arrow-head-right {
+  margin-top: -8px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 12px solid #4d535c;
+}
+
+.arrow-head-left {
+  margin-top: -8px;
+  margin-left: -12px;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 12px solid #4d535c;
+}
+
+.arrow-head-down.active {
   border-top-color: #b78d22;
   filter: drop-shadow(0 1px 0 rgba(255, 251, 204, 0.3)) drop-shadow(0 0 6px rgba(212, 160, 23, 0.35));
 }
 
-.arrow-head.maxed {
+.arrow-head-right.active {
+  border-left-color: #b78d22;
+  filter: drop-shadow(0 1px 0 rgba(255, 251, 204, 0.3)) drop-shadow(0 0 6px rgba(212, 160, 23, 0.35));
+}
+
+.arrow-head-left.active {
+  border-right-color: #b78d22;
+  filter: drop-shadow(0 1px 0 rgba(255, 251, 204, 0.3)) drop-shadow(0 0 6px rgba(212, 160, 23, 0.35));
+}
+
+.arrow-head-down.maxed {
   border-top-color: #d6a11f;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 220, 0.4)) drop-shadow(0 0 8px rgba(255, 205, 82, 0.45));
+}
+
+.arrow-head-right.maxed {
+  border-left-color: #d6a11f;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 220, 0.4)) drop-shadow(0 0 8px rgba(255, 205, 82, 0.45));
+}
+
+.arrow-head-left.maxed {
+  border-right-color: #d6a11f;
   filter: drop-shadow(0 1px 0 rgba(255, 255, 220, 0.4)) drop-shadow(0 0 8px rgba(255, 205, 82, 0.45));
 }
 

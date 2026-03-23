@@ -318,9 +318,9 @@
       grid.appendChild(line);
     }
 
-    function appendArrowHead(x, y, arrowClass) {
+    function appendArrowHead(x, y, arrowClass, direction = 'down') {
       const head = document.createElement('div');
-      head.className = `arrow-head ${arrowClass}`.trim();
+      head.className = `arrow-head arrow-head-${direction} ${arrowClass}`.trim();
       head.style.left = `${x}px`;
       head.style.top = `${y}px`;
       grid.appendChild(head);
@@ -341,6 +341,11 @@
         const sy = sourceEl.offsetTop + sourceEl.offsetHeight;
         const tx = targetEl.offsetLeft + targetEl.offsetWidth / 2;
         const ty = targetEl.offsetTop;
+        const sourceCenterY = sourceEl.offsetTop + sourceEl.offsetHeight / 2;
+        const sourceRight = sourceEl.offsetLeft + sourceEl.offsetWidth;
+        const sourceLeft = sourceEl.offsetLeft;
+        const targetLeft = targetEl.offsetLeft;
+        const targetRight = targetEl.offsetLeft + targetEl.offsetWidth;
 
         let arrowClass = '';
         if (source.currentRank >= req.qty && talent.currentRank >= talent.maxRank) {
@@ -349,13 +354,26 @@
           arrowClass = 'active';
         }
 
-        if (source.col === talent.col) {
+        if (source.row === talent.row) {
+          const direction = tx > sx ? 'right' : 'left';
+          const startX = direction === 'right' ? sourceRight : targetRight;
+          const width = direction === 'right'
+            ? targetLeft - sourceRight
+            : sourceLeft - targetRight;
+
+          appendLine(`arrow-line arrow-line-h ${arrowClass}`.trim(), {
+            left: `${startX}px`,
+            top: `${sourceCenterY - 2}px`,
+            width: `${width}px`,
+          });
+          appendArrowHead(direction === 'right' ? targetLeft : targetRight, sourceCenterY, arrowClass, direction);
+        } else if (source.col === talent.col) {
           appendLine(`arrow-line arrow-line-v ${arrowClass}`.trim(), {
             left: `${sx - 2}px`,
             top: `${sy}px`,
             height: `${ty - sy}px`,
           });
-          appendArrowHead(sx, ty - 7, arrowClass);
+          appendArrowHead(sx, ty - 7, arrowClass, 'down');
         } else {
           const midY = ty - 10;
 
@@ -378,7 +396,7 @@
             top: `${midY}px`,
             height: `${ty - midY}px`,
           });
-          appendArrowHead(tx, ty - 7, arrowClass);
+          appendArrowHead(tx, ty - 7, arrowClass, 'down');
         }
       });
     });
