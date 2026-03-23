@@ -8,6 +8,22 @@
 </head>
 <body>
   <div class="planner-shell" id="planner-shell">
+    <div class="selection-screen" id="selection-screen" hidden>
+      <div class="selection-card">
+        <p class="selection-kicker">Talent Planner</p>
+        <h1>Choose Your Era And Class</h1>
+        <p class="selection-copy">Start with a ruleset, then pick a class to open its talent trees.</p>
+        <div class="selection-section">
+          <div class="selection-label">Era</div>
+          <div class="selection-flavors" id="selection-flavors"></div>
+        </div>
+        <div class="selection-section">
+          <div class="selection-label">Class</div>
+          <div class="selection-classes" id="selection-classes"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="planner" id="planner">
       <div class="flavor-toggle" id="flavor-toggle"></div>
       <div class="class-picker" id="class-picker"></div>

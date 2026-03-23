@@ -24,8 +24,8 @@
 
   let classData = null;
   let maxPoints = 0;
-  let currentFlavor = FLAVORS[1]; // Default TBC
-  let currentClass = CLASS_LIST[3]; // Default Paladin
+  let currentFlavor = null;
+  let currentClass = null;
 
   // State
   const state = {
@@ -37,6 +37,9 @@
   const flavorToggle = document.getElementById('flavor-toggle');
   const classPicker = document.getElementById('class-picker');
   const plannerShell = document.getElementById('planner-shell');
+  const selectionScreen = document.getElementById('selection-screen');
+  const selectionFlavors = document.getElementById('selection-flavors');
+  const selectionClasses = document.getElementById('selection-classes');
   const plannerEl = document.getElementById('planner');
   const treesContainer = document.getElementById('trees-container');
   const orderList = document.getElementById('order-list');
@@ -50,12 +53,12 @@
     flavorToggle.innerHTML = '';
     FLAVORS.forEach(flavor => {
       const btn = document.createElement('button');
-      btn.className = `flavor-btn${flavor.slug === currentFlavor.slug ? ' active' : ''}`;
+      btn.className = `flavor-btn${flavor.slug === currentFlavor?.slug ? ' active' : ''}`;
       btn.textContent = flavor.name;
       btn.addEventListener('click', () => {
         currentFlavor = flavor;
         renderFlavorToggle();
-        loadCurrentClass();
+        if (currentClass) loadCurrentClass();
       });
       flavorToggle.appendChild(btn);
     });
@@ -66,19 +69,64 @@
     classPicker.innerHTML = '';
     CLASS_LIST.forEach(cls => {
       const btn = document.createElement('button');
-      btn.className = `class-btn c-${cls.slug}${cls.slug === currentClass.slug ? ' active' : ''}`;
+      btn.className = `class-btn c-${cls.slug}${cls.slug === currentClass?.slug ? ' active' : ''}`;
       btn.title = cls.name;
       btn.innerHTML = `<img src="${ICON_BASE}classicon_${cls.slug}.jpg" alt="${cls.name}">`;
       btn.addEventListener('click', () => {
         currentClass = cls;
         renderClassPicker();
-        loadCurrentClass();
+        if (currentFlavor) loadCurrentClass();
       });
       classPicker.appendChild(btn);
     });
   }
 
+  function renderSelectionScreen() {
+    selectionFlavors.innerHTML = '';
+    FLAVORS.forEach(flavor => {
+      const btn = document.createElement('button');
+      btn.className = `flavor-btn${flavor.slug === currentFlavor?.slug ? ' active' : ''}`;
+      btn.textContent = flavor.name;
+      btn.addEventListener('click', () => {
+        currentFlavor = flavor;
+        renderSelectionScreen();
+      });
+      selectionFlavors.appendChild(btn);
+    });
+
+    selectionClasses.innerHTML = '';
+    CLASS_LIST.forEach(cls => {
+      const btn = document.createElement('button');
+      btn.className = `selection-class-btn c-${cls.slug}`;
+      btn.disabled = !currentFlavor;
+      btn.innerHTML = `<img src="${ICON_BASE}classicon_${cls.slug}.jpg" alt="${cls.name}"><span>${cls.name}</span>`;
+      btn.addEventListener('click', () => {
+        currentClass = cls;
+        startPlanner();
+      });
+      selectionClasses.appendChild(btn);
+    });
+  }
+
+  function showSelectionScreen() {
+    selectionScreen.hidden = false;
+    plannerEl.hidden = true;
+    plannerShell.style.height = '';
+    plannerShell.style.setProperty('--planner-scale', '1');
+  }
+
+  function startPlanner() {
+    if (!currentFlavor || !currentClass) return;
+    selectionScreen.hidden = true;
+    plannerEl.hidden = false;
+    renderFlavorToggle();
+    renderClassPicker();
+    loadCurrentClass();
+  }
+
   async function loadCurrentClass() {
+    if (!currentFlavor || !currentClass) return;
+
     const file = `data/${currentClass.slug}-${currentFlavor.slug}.json`;
     const resp = await fetch(file);
     classData = await resp.json();
@@ -223,6 +271,8 @@
   }
 
   function updatePlannerScale() {
+    if (plannerEl.hidden) return;
+
     plannerShell.style.setProperty('--planner-scale', '1');
     plannerShell.style.height = '';
 
@@ -726,7 +776,11 @@
     }
   }
 
-  renderFlavorToggle();
-  renderClassPicker();
-  loadCurrentClass();
+  renderSelectionScreen();
+
+  if (currentFlavor && currentClass) {
+    startPlanner();
+  } else {
+    showSelectionScreen();
+  }
 })();
