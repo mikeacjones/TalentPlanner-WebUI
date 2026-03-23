@@ -251,6 +251,56 @@
     return parts.join('\n');
   }
 
+  function buildSimulatedState(orderEntries) {
+    const trees = classData.trees.map(tree => ({
+      ...tree,
+      talents: tree.talents.map(t => ({ ...t, currentRank: 0 })),
+    }));
+    const nextOrder = [];
+
+    function simulatedFindTalent(treeIndex, talentId) {
+      return trees[treeIndex].talents.find(t => t.id === talentId);
+    }
+
+    function simulatedPointsInTiersUpTo(treeIndex, row) {
+      return trees[treeIndex].talents
+        .filter(t => t.row < row)
+        .reduce((sum, t) => sum + t.currentRank, 0);
+    }
+
+    function simulatedPrereqsMet(treeIndex, talent) {
+      if (!talent.requires || talent.requires.length === 0) return true;
+      return talent.requires.every(req => {
+        const dep = simulatedFindTalent(treeIndex, req.id);
+        return dep && dep.currentRank >= req.qty;
+      });
+    }
+
+    for (const entry of orderEntries) {
+      const talent = simulatedFindTalent(entry.treeIndex, entry.talentId);
+      if (!talent) return null;
+      if (talent.currentRank >= talent.maxRank) return null;
+      if (simulatedPointsInTiersUpTo(entry.treeIndex, talent.row) < getRequiredPointsForRow(talent.row)) return null;
+      if (!simulatedPrereqsMet(entry.treeIndex, talent)) return null;
+
+      talent.currentRank++;
+      nextOrder.push({
+        treeIndex: entry.treeIndex,
+        talentId: talent.id,
+        rank: talent.currentRank,
+        maxRank: talent.maxRank,
+        name: talent.name,
+        icon: talent.icon,
+      });
+    }
+
+    return { trees, order: nextOrder };
+  }
+
+  function getSimulatedRemoval(index) {
+    return buildSimulatedState(state.order.filter((_, i) => i !== index));
+  }
+
   function reserveOrderGridHeight() {
     if (!classData) return;
 
@@ -507,11 +557,20 @@
     orderList.innerHTML = '';
     state.order.forEach((entry, i) => {
       const level = classData.startingLevel + i + 1;
+      const removableState = getSimulatedRemoval(i);
       const item = document.createElement('div');
       item.className = 'order-item';
+      item.dataset.tree = String(entry.treeIndex);
+      item.dataset.talentId = String(entry.talentId);
       item.innerHTML = `
         <img class="order-item-icon" src="${ICON_BASE}${entry.icon}.jpg" alt="${entry.name}">
         <span class="order-item-level">${level}</span>
+        <button class="order-item-remove${removableState ? '' : ' disabled'}"
+                type="button"
+                aria-label="Remove ${entry.name} at level ${level}"
+                ${removableState ? '' : 'disabled'}>
+          ×
+        </button>
       `;
       orderList.appendChild(item);
     });
@@ -548,9 +607,27 @@
     showTooltip(talentEl);
   });
 
-  function showTooltip(talentEl) {
-    const treeIndex = parseInt(talentEl.dataset.tree);
-    const talentId = parseInt(talentEl.dataset.talentId);
+  orderList.addEventListener('mouseenter', (e) => {
+    const orderItem = e.target.closest('.order-item');
+    if (!orderItem) return;
+    showTooltip(orderItem);
+  }, true);
+
+  orderList.addEventListener('mouseleave', (e) => {
+    const orderItem = e.target.closest('.order-item');
+    if (!orderItem) return;
+    tooltip.style.display = 'none';
+  }, true);
+
+  orderList.addEventListener('mousemove', (e) => {
+    const orderItem = e.target.closest('.order-item');
+    if (!orderItem) { tooltip.style.display = 'none'; return; }
+    showTooltip(orderItem);
+  });
+
+  function showTooltip(targetEl) {
+    const treeIndex = parseInt(targetEl.dataset.tree);
+    const talentId = parseInt(targetEl.dataset.talentId);
     const talent = findTalent(treeIndex, talentId);
     if (!talent) return;
 
@@ -578,7 +655,7 @@
 
     tooltip.style.display = 'block';
 
-    const rect = talentEl.getBoundingClientRect();
+    const rect = targetEl.getBoundingClientRect();
     const tipRect = tooltip.getBoundingClientRect();
     let left = rect.left + rect.width / 2 - tipRect.width / 2;
     let top = rect.top - tipRect.height - 6;
@@ -636,6 +713,24 @@
       talent.currentRank--;
       updateAllStates();
     }
+  });
+
+  orderList.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('.order-item-remove');
+    if (!removeBtn || removeBtn.disabled) return;
+
+    const orderItem = removeBtn.closest('.order-item');
+    if (!orderItem) return;
+
+    const orderIndex = Array.from(orderList.children).indexOf(orderItem);
+    if (orderIndex < 0) return;
+
+    const simulated = getSimulatedRemoval(orderIndex);
+    if (!simulated) return;
+
+    state.trees = simulated.trees;
+    state.order = simulated.order;
+    updateAllStates();
   });
 
   // Reset

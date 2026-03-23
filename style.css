@@ -608,6 +608,7 @@ body {
 }
 
 .order-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -616,6 +617,11 @@ body {
   border-radius: 6px;
   padding: 4px 6px;
   min-height: 36px;
+  overflow: visible;
+}
+
+.order-item:hover {
+  border-color: #4c5360;
 }
 
 .order-item-icon {
@@ -629,6 +635,52 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: #fff;
+}
+
+.order-item-remove {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #7a2222;
+  border-radius: 999px;
+  background: #a91b1b;
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.15s, transform 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.order-item:hover .order-item-remove {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.order-item-remove:hover:not(:disabled) {
+  background: #c32121;
+  border-color: #9c2a2a;
+}
+
+.order-item-remove:disabled,
+.order-item-remove.disabled {
+  background: #353941;
+  border-color: #454b56;
+  color: #7a808a;
+  cursor: not-allowed;
+}
+
+.order-item:hover .order-item-remove:disabled,
+.order-item:hover .order-item-remove.disabled {
+  opacity: 1;
 }
 
 /* Export Modal */
