@@ -292,6 +292,14 @@ body {
   border-color: #d1a84b;
 }
 
+.mobile-tree-switcher {
+  display: none;
+}
+
+.mobile-tree-btn {
+  font-family: inherit;
+}
+
 /* Talent Trees */
 .trees-container {
   display: flex;
@@ -608,11 +616,30 @@ body {
   padding: 14px 16px;
 }
 
+.order-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
 .order-panel h2 {
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 10px;
   color: #fff;
+}
+
+.order-panel-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #8b919a;
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
 }
 
 .order-grid {
@@ -696,6 +723,168 @@ body {
 .order-item:hover .order-item-remove:disabled,
 .order-item:hover .order-item-remove.disabled {
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .planner-shell {
+    display: block;
+    padding: 10px;
+  }
+
+  .planner,
+  .selection-screen {
+    width: 100%;
+    max-width: none;
+    transform: none !important;
+  }
+
+  .selection-screen {
+    padding: 10px 0 24px;
+  }
+
+  .selection-card {
+    padding: 22px 18px;
+  }
+
+  .selection-card h1 {
+    font-size: 26px;
+  }
+
+  .selection-classes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .class-picker {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 6px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .top-bar-left,
+  .top-bar-center {
+    justify-content: space-between;
+  }
+
+  .top-bar-right {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .top-bar-right .btn {
+    flex: 1 1 calc(50% - 4px);
+  }
+
+  .mobile-tree-switcher {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .mobile-tree-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 10px;
+    background: #232730;
+    color: #c9d0da;
+    border: 1px solid #323741;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .mobile-tree-btn img {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    border: 1px solid #323741;
+    flex: 0 0 auto;
+  }
+
+  .mobile-tree-btn span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .mobile-tree-btn strong {
+    margin-left: auto;
+    font-size: 12px;
+    color: #8b919a;
+  }
+
+  .mobile-tree-btn.active {
+    border-color: #459aff;
+    background: #2b313c;
+    color: #fff;
+  }
+
+  .mobile-tree-btn.active strong {
+    color: #fff;
+  }
+
+  .trees-container {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .tree {
+    display: none;
+    margin-bottom: 0;
+  }
+
+  .tree.mobile-active {
+    display: block;
+  }
+
+  .tree-header {
+    padding: 12px;
+  }
+
+  .tree-body {
+    padding: 10px 6px 8px;
+  }
+
+  .talent {
+    width: 54px;
+    height: 54px;
+  }
+
+  .talent-grid {
+    gap: 4px 2px;
+  }
+
+  .order-panel {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    border-radius: 12px 12px 0 0;
+    padding: 12px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .order-panel-toggle {
+    display: inline-flex;
+  }
+
+  .order-panel.collapsed .order-grid {
+    display: none;
+  }
+
+  .order-grid {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  }
 }
 
 /* Export Modal */

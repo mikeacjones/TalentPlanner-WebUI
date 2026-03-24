@@ -53,12 +53,19 @@
         </div>
       </div>
 
+      <div class="mobile-tree-switcher" id="mobile-tree-switcher"></div>
+
       <div class="trees-container" id="trees-container">
         <!-- Trees rendered by JS -->
       </div>
 
-      <div class="order-panel">
-        <h2>Talent Order</h2>
+      <div class="order-panel" id="order-panel">
+        <div class="order-panel-header">
+          <h2>Talent Order</h2>
+          <button class="order-panel-toggle" id="order-panel-toggle" type="button" aria-expanded="true">
+            Collapse
+          </button>
+        </div>
         <div class="order-grid" id="order-list"></div>
       </div>
     </div>

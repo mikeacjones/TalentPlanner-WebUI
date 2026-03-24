@@ -26,6 +26,8 @@
   let maxPoints = 0;
   let currentFlavor = null;
   let currentClass = null;
+  let activeMobileTree = 0;
+  let orderPanelCollapsed = false;
 
   // State
   const state = {
@@ -41,7 +43,10 @@
   const selectionFlavors = document.getElementById('selection-flavors');
   const selectionClasses = document.getElementById('selection-classes');
   const plannerEl = document.getElementById('planner');
+  const mobileTreeSwitcher = document.getElementById('mobile-tree-switcher');
   const treesContainer = document.getElementById('trees-container');
+  const orderPanel = document.getElementById('order-panel');
+  const orderPanelToggle = document.getElementById('order-panel-toggle');
   const orderList = document.getElementById('order-list');
   const pointsLeftEl = document.getElementById('points-left');
   const reqLevelEl = document.getElementById('req-level');
@@ -138,6 +143,7 @@
       talents: tree.talents.map(t => ({ ...t, currentRank: 0 })),
     }));
     state.order = [];
+    activeMobileTree = 0;
 
     document.title = `${currentFlavor.name} Talent Planner - ${currentClass.name}`;
     renderTrees();
@@ -320,11 +326,19 @@
     orderList.style.minHeight = `${reservedHeight}px`;
   }
 
+  function isMobileLayout() {
+    return window.matchMedia('(max-width: 768px)').matches;
+  }
+
   function updatePlannerScale() {
     if (plannerEl.hidden) return;
 
     plannerShell.style.setProperty('--planner-scale', '1');
     plannerShell.style.height = '';
+
+    if (isMobileLayout()) {
+      return;
+    }
 
     reserveOrderGridHeight();
 
@@ -346,6 +360,45 @@
 
     plannerShell.style.setProperty('--planner-scale', String(scale));
     plannerShell.style.height = `${plannerHeight * scale + shellPadY}px`;
+  }
+
+  function updateMobileTreeVisibility() {
+    const treeEls = treesContainer.querySelectorAll('.tree');
+    treeEls.forEach((treeEl, index) => {
+      treeEl.classList.toggle('mobile-active', index === activeMobileTree);
+    });
+
+    mobileTreeSwitcher.querySelectorAll('.mobile-tree-btn').forEach((btn, index) => {
+      btn.classList.toggle('active', index === activeMobileTree);
+    });
+
+    const activeTreeEl = treeEls[activeMobileTree];
+    if (activeTreeEl) drawArrows(activeMobileTree, activeTreeEl);
+  }
+
+  function renderMobileTreeSwitcher() {
+    mobileTreeSwitcher.innerHTML = '';
+    state.trees.forEach((tree, index) => {
+      const btn = document.createElement('button');
+      btn.className = `mobile-tree-btn${index === activeMobileTree ? ' active' : ''}`;
+      btn.type = 'button';
+      btn.innerHTML = `
+        <img src="${ICON_BASE}${tree.talents[0]?.icon || ''}.jpg" alt="${tree.name}">
+        <span>${tree.name}</span>
+        <strong>${getTreeSpent(index)}</strong>
+      `;
+      btn.addEventListener('click', () => {
+        activeMobileTree = index;
+        updateMobileTreeVisibility();
+      });
+      mobileTreeSwitcher.appendChild(btn);
+    });
+  }
+
+  function syncOrderPanelState() {
+    orderPanel.classList.toggle('collapsed', orderPanelCollapsed);
+    orderPanelToggle.textContent = orderPanelCollapsed ? 'Expand' : 'Collapse';
+    orderPanelToggle.setAttribute('aria-expanded', String(!orderPanelCollapsed));
   }
 
   // Rendering
@@ -401,6 +454,8 @@
       requestAnimationFrame(() => drawArrows(treeIndex, treeEl));
     });
 
+    renderMobileTreeSwitcher();
+    updateMobileTreeVisibility();
     updateAllStates();
   }
 
@@ -543,6 +598,7 @@
     });
 
     renderOrder();
+    renderMobileTreeSwitcher();
     updateURL();
     updatePlannerScale();
 
@@ -851,6 +907,13 @@
   });
 
   window.addEventListener('resize', updatePlannerScale);
+  window.addEventListener('resize', updateMobileTreeVisibility);
+
+  orderPanelToggle.addEventListener('click', () => {
+    orderPanelCollapsed = !orderPanelCollapsed;
+    syncOrderPanelState();
+    updatePlannerScale();
+  });
 
   document.getElementById('btn-copy').addEventListener('click', () => {
     exportOutput.select();
@@ -884,6 +947,7 @@
   }
 
   renderSelectionScreen();
+  syncOrderPanelState();
 
   if (currentFlavor && currentClass) {
     startPlanner();
